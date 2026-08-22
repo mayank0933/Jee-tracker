@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>JEE Tracker Pro - Routine, Syllabus & Mocks</title>
   <meta name="description" content="Clean, simple, date-wise Routine Planner, Official JEE PCM Syllabus Tracker, Question Practice Counter & Comprehensive Mock Test Analyzer.">
-  <meta name="theme-color" content="#0a0f1d">
+  <meta name="theme-color" content="#080c16">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -39,11 +39,11 @@
     <section class="view-panel active" id="view-home">
       <!-- Target Countdown Banner -->
       <div class="ui-card" style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.12), rgba(168, 85, 247, 0.12)); border-color: rgba(0, 210, 255, 0.3);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
           <div>
             <span class="pill-badge pill-amber">⏳ JEE Main Countdown</span>
-            <h2 id="homeCountdownTxt" style="font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;">155 Days Left</h2>
-            <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 0.2rem;">"Daily consistent question solving is the key to top IITs!"</p>
+            <h2 id="homeCountdownTxt" style="font-size: 1.25rem; font-weight: 800; margin-top: 0.3rem;">155 Days Left</h2>
+            <p style="font-size: 0.76rem; color: var(--text-sub); margin-top: 0.2rem;">"Daily consistent question solving is the key to top IITs!"</p>
           </div>
           <button class="btn btn-primary btn-sm" onclick="app.switchTab('routine')">📅 My Timetable</button>
         </div>
@@ -52,7 +52,7 @@
       <!-- Question Solving Station (+1 and -1 counters) -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div>
+          <div class="card-heading-box">
             <div class="card-heading">🎯 Question Solving Station</div>
             <div class="card-subtitle">Count questions solved today (Target: 100 Qs/day)</div>
           </div>
@@ -106,7 +106,9 @@
       <!-- Live Ongoing Routine Slot -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">🕒 Today's Ongoing Routine Slot</div>
+          <div class="card-heading-box">
+            <div class="card-heading">🕒 Today's Ongoing Routine Slot</div>
+          </div>
           <span class="pill-badge pill-phy" id="homeLiveBadge">Current Slot</span>
         </div>
         <div id="homeOngoingSlotBox">
@@ -120,7 +122,9 @@
       <!-- Today's Action Checklist -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">✅ Today's Task Checklist</div>
+          <div class="card-heading-box">
+            <div class="card-heading">✅ Today's Task Checklist</div>
+          </div>
           <button class="btn btn-primary btn-sm" onclick="app.openModal('modalTask')">+ Add Task</button>
         </div>
         <div id="homeTasksListContainer" style="display: flex; flex-direction: column; gap: 0.45rem;">
@@ -131,7 +135,9 @@
       <!-- Quick Syllabus Coverage Overview -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">📚 Overall PCM Syllabus Mastered</div>
+          <div class="card-heading-box">
+            <div class="card-heading">📚 Overall PCM Syllabus Mastered</div>
+          </div>
           <button class="btn btn-subtle btn-sm" onclick="app.switchTab('syllabus')">View Detailed Syllabus →</button>
         </div>
         <div style="display: flex; flex-direction: column; gap: 0.65rem;">
@@ -160,14 +166,14 @@
       </div>
     </section>
 
-    <!-- 2. TIMETABLE & ROUTINE (MANUAL / CUSTOM DATE-WISE) -->
+    <!-- 2. TIMETABLE & ROUTINE (DATE-WISE PLANNER) -->
     <section class="view-panel" id="view-routine">
       <div class="ui-card">
         <!-- Card Header -->
         <div class="card-title-row">
-          <div>
-            <div class="card-heading">⏱️ Daily Timetable & Routine Planner</div>
-            <div class="card-subtitle">Add custom slots manually or load 12-Hour template</div>
+          <div class="card-heading-box">
+            <div class="card-heading">⏱️ Daily Timetable</div>
+            <div class="card-subtitle">Plan today, tomorrow or any upcoming date</div>
           </div>
           <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Slot</button>
         </div>
@@ -176,7 +182,7 @@
         <div class="date-nav-bar">
           <button class="date-tab-btn active" id="btnDateToday" onclick="app.selectRoutineDate('today')">Today</button>
           <button class="date-tab-btn" id="btnDateTomorrow" onclick="app.selectRoutineDate('tomorrow')">Tomorrow</button>
-          <button class="date-tab-btn" id="btnDateCustom" onclick="document.getElementById('routineDatePicker').showPicker()">📅 Pick Date</button>
+          <button class="date-tab-btn" id="btnDateCustom" onclick="app.triggerDatePicker()">📅 Pick Date</button>
           <input type="date" id="routineDatePicker" style="display:none;" onchange="app.selectRoutineCustomDate(this.value)">
         </div>
 
@@ -184,12 +190,12 @@
         <div class="timetable-summary-banner">
           <div>
             <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">ACTIVE PLAN FOR:</div>
-            <div style="font-size: 1rem; font-weight: 800; color: var(--col-amber);" id="routineSelectedDateLabel">Today</div>
-            <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 0.15rem;" id="routineDayStatsText">0 Slots • 0 hrs study</div>
+            <div style="font-size: 0.95rem; font-weight: 800; color: var(--col-amber);" id="routineSelectedDateLabel">Today</div>
+            <div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 0.15rem;" id="routineDayStatsText">0 Slots Planned</div>
           </div>
           <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-            <button class="btn btn-accent btn-sm" onclick="app.load12HourTemplateForSelectedDate()" title="Quickly load 12-hour focused dropper routine into this date">⚡ Load 12-Hour Template</button>
-            <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Custom Slot</button>
+            <button class="btn btn-accent btn-sm" onclick="app.load12HourTemplateForSelectedDate()" title="Load standard 12-hour dropper template for this date">⚡ Load 12-Hour Template</button>
+            <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Slot</button>
           </div>
         </div>
 
@@ -199,8 +205,8 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
-          <button class="btn btn-danger btn-sm" onclick="app.clearSlotsForSelectedDate()">🗑️ Clear All Slots For This Date</button>
-          <button class="btn btn-subtle btn-sm" onclick="app.resetChecksForSelectedDate()">Reset Today's Checks</button>
+          <button class="btn btn-danger btn-sm" onclick="app.clearSlotsForSelectedDate()">🗑️ Clear Day Slots</button>
+          <button class="btn btn-subtle btn-sm" onclick="app.resetChecksForSelectedDate()">Reset Checks</button>
         </div>
       </div>
     </section>
@@ -209,7 +215,7 @@
     <section class="view-panel" id="view-syllabus">
       <div class="ui-card">
         <div class="card-title-row">
-          <div>
+          <div class="card-heading-box">
             <div class="card-heading">📚 Official JEE Main & Advanced Syllabus</div>
             <div class="card-subtitle">Clear chapter milestones & progress percentage</div>
           </div>
@@ -245,7 +251,7 @@
       <!-- Performance Scorecard -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div>
+          <div class="card-heading-box">
             <div class="card-heading">📝 Mock Test Performance Scorecard</div>
             <div class="card-subtitle">Track every test you give with complete data</div>
           </div>
@@ -285,7 +291,7 @@
       <!-- Mistake Notebook (Error Analyzer) -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div>
+          <div class="card-heading-box">
             <div class="card-heading">📖 JEE Mistake Notebook (Error Log)</div>
             <div class="card-subtitle">Note your question mistakes so you never repeat them</div>
           </div>
@@ -303,7 +309,9 @@
       <!-- High Level Stats -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">📊 Simple Study Statistics & Progress</div>
+          <div class="card-heading-box">
+            <div class="card-heading">📊 Simple Study Statistics & Progress</div>
+          </div>
           <span class="pill-badge pill-amber">All-Time Data</span>
         </div>
 
@@ -341,7 +349,9 @@
       <!-- Daily Study Reflection / Diary -->
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">📝 Daily Study Reflection & Rating</div>
+          <div class="card-heading-box">
+            <div class="card-heading">📝 Daily Study Reflection & Rating</div>
+          </div>
         </div>
         <div style="margin-bottom: 0.75rem;">
           <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">How was your study productivity today?</label>
@@ -364,7 +374,9 @@
     <section class="view-panel" id="view-settings">
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">💾 Backup & Restore All Data</div>
+          <div class="card-heading-box">
+            <div class="card-heading">💾 Backup & Restore All Data</div>
+          </div>
         </div>
         <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 0.85rem;">
           All your study routines, syllabus progress, question counters, and mock test scores are saved locally on your device. Export a backup anytime!
@@ -381,7 +393,9 @@
 
       <div class="ui-card">
         <div class="card-title-row">
-          <div class="card-heading">🎯 Target JEE Exam Date</div>
+          <div class="card-heading-box">
+            <div class="card-heading">🎯 Target JEE Exam Date</div>
+          </div>
         </div>
         <div style="margin-bottom: 0.75rem;">
           <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">JEE Exam Date:</label>
@@ -390,9 +404,11 @@
         <button class="btn btn-accent btn-sm" onclick="app.openModal('modalGoal')">✎ Edit Target IIT & Branch Goal</button>
       </div>
 
-      <div class="ui-card" style="border-color: rgba(239, 68, 68, 0.3);">
+      <div class="ui-card" style="border-color: rgba(255, 77, 77, 0.3);">
         <div class="card-title-row">
-          <div class="card-heading" style="color: var(--col-red);">⚠️ Reset All Data</div>
+          <div class="card-heading-box">
+            <div class="card-heading" style="color: var(--col-red);">⚠️ Reset All Data</div>
+          </div>
         </div>
         <button class="btn btn-danger btn-sm" onclick="app.resetAllData()">🗑️ Factory Reset App</button>
       </div>
@@ -649,7 +665,7 @@
     </div>
     <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
       <button type="button" class="btn btn-subtle" onclick="app.closeModal('modalGoal')">Cancel</button>
-      <button type="button" class="btn btn-primary" onclick="app.saveDreamGoal()">Save Goal</button>
+      <button type="submit" class="btn btn-primary" onclick="app.saveDreamGoal()">Save Goal</button>
     </div>
   </div>
 </div>
@@ -658,3 +674,4 @@
 <script src="js/app.js"></script>
 </body>
 </html>
+
