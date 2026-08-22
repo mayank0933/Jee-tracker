@@ -45,7 +45,7 @@
             <h2 id="homeCountdownTxt" style="font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;">155 Days Left</h2>
             <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 0.2rem;">"Daily consistent question solving is the key to top IITs!"</p>
           </div>
-          <button class="btn btn-primary btn-sm" onclick="app.switchTab('routine')">📅 View Today's Timetable</button>
+          <button class="btn btn-primary btn-sm" onclick="app.switchTab('routine')">📅 My Timetable</button>
         </div>
       </div>
 
@@ -160,13 +160,14 @@
       </div>
     </section>
 
-    <!-- 2. TIMETABLE & ROUTINE (DATE-WISE) -->
+    <!-- 2. TIMETABLE & ROUTINE (MANUAL / CUSTOM DATE-WISE) -->
     <section class="view-panel" id="view-routine">
       <div class="ui-card">
+        <!-- Card Header -->
         <div class="card-title-row">
           <div>
-            <div class="card-heading">⏱️ Date-Wise Daily Timetable</div>
-            <div class="card-subtitle">Plan today, tomorrow, or any upcoming day!</div>
+            <div class="card-heading">⏱️ Daily Timetable & Routine Planner</div>
+            <div class="card-subtitle">Add custom slots manually or load 12-Hour template</div>
           </div>
           <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Slot</button>
         </div>
@@ -179,30 +180,27 @@
           <input type="date" id="routineDatePicker" style="display:none;" onchange="app.selectRoutineCustomDate(this.value)">
         </div>
 
-        <!-- Selected Date Header & Quick Preset Loader -->
-        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-elevated); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <!-- Day Overview Summary Bar -->
+        <div class="timetable-summary-banner">
           <div>
-            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">SELECTED DATE:</span>
-            <div style="font-size: 0.95rem; font-weight: 800; color: var(--col-amber);" id="routineSelectedDateLabel">Today</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">ACTIVE PLAN FOR:</div>
+            <div style="font-size: 1rem; font-weight: 800; color: var(--col-amber);" id="routineSelectedDateLabel">Today</div>
+            <div style="font-size: 0.76rem; color: var(--text-sub); margin-top: 0.15rem;" id="routineDayStatsText">0 Slots • 0 hrs study</div>
           </div>
-          <div style="display: flex; gap: 0.4rem;">
-            <select id="presetSelectDropdown" style="padding: 0.35rem 0.6rem; font-size: 0.78rem; width: auto;" onchange="app.loadPresetForSelectedDate(this.value)">
-              <option value="">⚡ Load Preset Template...</option>
-              <option value="dropper_12hr">12-Hour Focused Dropper</option>
-              <option value="school_6hr">6-8 Hour School-Going</option>
-              <option value="weekend_marathon">Weekend Marathon & Mock</option>
-            </select>
+          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <button class="btn btn-accent btn-sm" onclick="app.load12HourTemplateForSelectedDate()" title="Quickly load 12-hour focused dropper routine into this date">⚡ Load 12-Hour Template</button>
+            <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Custom Slot</button>
           </div>
         </div>
 
         <!-- Slots List for Selected Date -->
         <div id="routineDateSlotsContainer">
-          <!-- Dynamically populated -->
+          <!-- Dynamically populated or empty state -->
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
-          <button class="btn btn-danger btn-sm" onclick="app.clearSlotsForSelectedDate()">Clear All Slots For This Date</button>
-          <button class="btn btn-subtle btn-sm" onclick="app.resetChecksForSelectedDate()">Reset Checks</button>
+          <button class="btn btn-danger btn-sm" onclick="app.clearSlotsForSelectedDate()">🗑️ Clear All Slots For This Date</button>
+          <button class="btn btn-subtle btn-sm" onclick="app.resetChecksForSelectedDate()">Reset Today's Checks</button>
         </div>
       </div>
     </section>
@@ -470,13 +468,14 @@
   </div>
 </div>
 
-<!-- Modal: Add Routine Slot (Date Specific) -->
+<!-- Modal: Add / Edit Routine Slot (Date Specific) -->
 <div class="modal-overlay" id="modalSlot">
   <div class="modal-sheet">
     <div class="sheet-drag-handle"></div>
-    <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.75rem;">⏱️ Add Routine Slot</h3>
-    <div style="font-size: 0.78rem; color: var(--col-amber); margin-bottom: 0.75rem;" id="modalSlotForDateLabel">Adding for: Today</div>
-    <form onsubmit="app.handleAddRoutineSlot(event)">
+    <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.75rem;" id="modalSlotHeaderTitle">⏱️ Add Routine Slot</h3>
+    <div style="font-size: 0.78rem; color: var(--col-amber); margin-bottom: 0.75rem;" id="modalSlotForDateLabel">Adding slot for: Today</div>
+    <form onsubmit="app.handleSaveRoutineSlot(event)">
+      <input type="hidden" id="editSlotId" value="">
       <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
         <div style="flex: 1;">
           <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">Start Time *</label>
@@ -488,8 +487,8 @@
         </div>
       </div>
       <div style="margin-bottom: 0.75rem;">
-        <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">Activity / Title *</label>
-        <input type="text" id="inputSlotTitle" placeholder="e.g. Organic Reaction Practice / DPP solving" required>
+        <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-sub);">Activity / Slot Title *</label>
+        <input type="text" id="inputSlotTitle" placeholder="e.g. Physics HC Verma Problem Solving / DPP" required>
       </div>
       <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
         <div style="flex: 1;">
@@ -515,7 +514,7 @@
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
         <button type="button" class="btn btn-subtle" onclick="app.closeModal('modalSlot')">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Slot</button>
+        <button type="submit" class="btn btn-primary" id="btnSaveSlotSubmit">Save Slot</button>
       </div>
     </form>
   </div>
@@ -659,3 +658,4 @@
 <script src="js/app.js"></script>
 </body>
 </html>
+
