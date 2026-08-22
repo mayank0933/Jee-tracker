@@ -1,5 +1,5 @@
 /**
- * JEE TRACKER PRO - CORE JAVASCRIPT ENGINE (V5 Clean & Robust)
+ * JEE TRACKER PRO - CORE JAVASCRIPT ENGINE (V6 Final Fixed)
  * 100% Manual Custom Routine by Default, On-Demand 12-Hour Dropper Template,
  * Non-Overflowing Mobile-First Timetable Cards with Edit/Delete,
  * Intuitive Syllabus Tracker, Question Counter Station (+1/-1),
@@ -8,7 +8,7 @@
 
 class JeeTrackerPro {
   constructor() {
-    this.STORAGE_KEY = 'JEE_TRACKER_PRO_V5_CLEAN';
+    this.STORAGE_KEY = 'JEE_TRACKER_PRO_V6_FIXED';
     this.currentTab = 'home';
     this.activeSyllabusSubject = 'physics';
     
@@ -29,6 +29,20 @@ class JeeTrackerPro {
     return d.toISOString().split('T')[0];
   }
 
+  formatDisplayDate(dateStr) {
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const y = parts[0];
+        const m = parseInt(parts[1], 10);
+        const d = parseInt(parts[2], 10);
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return `${d} ${months[m-1]} ${y}`;
+      }
+    } catch(e){}
+    return dateStr;
+  }
+
   getDefaultState() {
     const today = this.getTodayDateStr();
     return {
@@ -39,7 +53,7 @@ class JeeTrackerPro {
       streak: { count: 1, lastActiveDate: today },
       
       // Date-wise Custom Routine: { "YYYY-MM-DD": [ { id, time, title, subject, type } ] }
-      // Clean / Empty by default so user creates custom slots manually!
+      // 100% EMPTY by default so user creates custom slots manually!
       dateRoutines: {},
       
       // Date-wise Checked Slots: { "YYYY-MM-DD": [ slotId1, slotId2 ] }
@@ -318,7 +332,7 @@ class JeeTrackerPro {
     if (slots.length === 0) {
       container.innerHTML = `
         <div style="font-size:0.88rem; color:var(--text-sub); display:flex; justify-content:space-between; align-items:center;">
-          <span>No timetable slots added for today yet.</span>
+          <span>No timetable slots planned for today yet.</span>
           <button class="btn btn-primary btn-sm" onclick="app.switchTab('routine')">Plan Today</button>
         </div>
       `;
@@ -395,6 +409,14 @@ class JeeTrackerPro {
     this.renderRoutineView();
   }
 
+  triggerDatePicker() {
+    const picker = document.getElementById('routineDatePicker');
+    if (picker) {
+      if (picker.showPicker) picker.showPicker();
+      else picker.click();
+    }
+  }
+
   selectRoutineCustomDate(customDate) {
     if (!customDate) return;
     this.selectedRoutineDate = customDate;
@@ -402,7 +424,7 @@ class JeeTrackerPro {
     document.getElementById('btnDateToday').classList.remove('active');
     document.getElementById('btnDateTomorrow').classList.remove('active');
     document.getElementById('btnDateCustom').classList.add('active');
-    document.getElementById('btnDateCustom').textContent = `📅 ${customDate}`;
+    document.getElementById('btnDateCustom').textContent = `📅 ${this.formatDisplayDate(customDate)}`;
 
     this.renderRoutineView();
   }
@@ -456,10 +478,9 @@ class JeeTrackerPro {
     const today = this.getTodayDateStr();
     const tomorrow = this.getTomorrowDateStr();
 
-    let displayDate = this.selectedRoutineDate;
-    if (this.selectedRoutineDate === today) displayDate = `Today (${today})`;
-    else if (this.selectedRoutineDate === tomorrow) displayDate = `Tomorrow (${tomorrow})`;
-    else displayDate = `Date: ${this.selectedRoutineDate}`;
+    let displayDate = this.formatDisplayDate(this.selectedRoutineDate);
+    if (this.selectedRoutineDate === today) displayDate = `Today (${this.formatDisplayDate(today)})`;
+    else if (this.selectedRoutineDate === tomorrow) displayDate = `Tomorrow (${this.formatDisplayDate(tomorrow)})`;
 
     if (label) label.textContent = displayDate;
 
@@ -474,16 +495,16 @@ class JeeTrackerPro {
     const completedCount = slots.filter(s => checkedList.includes(s.id)).length;
 
     if (statsText) {
-      statsText.textContent = `${slots.length} Planned Slots • ${completedCount}/${slots.length} Completed • ~${plannedHours} hrs Study`;
+      statsText.textContent = `${slots.length} Slots Planned • ${completedCount}/${slots.length} Completed • ~${plannedHours} hrs Study`;
     }
 
     if (slots.length === 0) {
       container.innerHTML = `
         <div style="text-align:center; padding:2.5rem 1rem; background:var(--bg-card-elevated); border:1px dashed var(--border-color); border-radius:var(--radius-md); margin-top:0.5rem;">
           <div style="font-size:2.2rem; margin-bottom:0.4rem;">📅</div>
-          <h4 style="font-size:1.05rem; font-weight:800; margin-bottom:0.25rem;">No Routine Slots for this Date</h4>
+          <h4 style="font-size:1.05rem; font-weight:800; margin-bottom:0.25rem;">No Routine Slots Planned for this Date</h4>
           <p style="font-size:0.82rem; color:var(--text-sub); max-width:400px; margin:0 auto 1.25rem auto;">
-            Aap khud se custom slots bana sakte hain, ya direct <strong>12-Hour Focused Dropper Routine</strong> template load kar sakte hain!
+            Aap khud se custom study slots add karein, ya direct <strong>12-Hour Focused Dropper Routine</strong> template load karein!
           </p>
           <div style="display:flex; justify-content:center; gap:0.65rem; flex-wrap:wrap;">
             <button class="btn btn-primary" onclick="app.openModal('modalSlot')">+ Add Custom Slot</button>
@@ -513,32 +534,30 @@ class JeeTrackerPro {
       const durText = this.calcSlotDuration(slot.time);
       const subPill = slot.subject === 'Physics' ? 'pill-phy' : (slot.subject === 'Chemistry' ? 'pill-chem' : (slot.subject === 'Mathematics' ? 'pill-math' : 'pill-amber'));
       return `
-        <div class="routine-slot-card ${isLive ? 'active-slot' : ''} ${isDone ? 'completed-slot' : ''}">
-          <!-- Top Row: Checkbox, Time, Duration and Actions -->
-          <div class="slot-card-top">
-            <div class="slot-time-group">
-              <input type="checkbox" class="slot-check" ${isDone ? 'checked' : ''} onchange="app.toggleRoutineSlotCheck('${slot.id}', this.checked)">
-              <span class="slot-time-text">${slot.time}</span>
-              ${durText ? `<span class="slot-dur-badge">${durText}</span>` : ''}
+        <div class="slot-card ${isLive ? 'active-slot' : ''} ${isDone ? 'completed-slot' : ''}">
+          <!-- Top Row: Time Badge & Action Buttons -->
+          <div class="slot-card-header">
+            <div class="slot-time-pill">
+              <span>⏰ ${slot.time}</span>
+              ${durText ? `<span class="slot-dur-text">(${durText})</span>` : ''}
             </div>
-            <div class="slot-actions">
-              <button class="btn-slot-icon btn-slot-edit" onclick="app.openEditSlotModal('${slot.id}')" title="Edit slot">✎</button>
-              <button class="btn-slot-icon btn-slot-del" onclick="app.deleteRoutineSlot('${slot.id}')" title="Delete slot">🗑️</button>
+            <div class="slot-btn-group">
+              <button class="slot-btn-action slot-btn-edit" onclick="app.openEditSlotModal('${slot.id}')" title="Edit slot">✎ Edit</button>
+              <button class="slot-btn-action slot-btn-del" onclick="app.deleteRoutineSlot('${slot.id}')" title="Delete slot">🗑️ Delete</button>
             </div>
           </div>
 
-          <!-- Middle Row: Title -->
-          <div class="slot-card-body">
+          <!-- Middle Row: Title & Checkbox -->
+          <div class="slot-card-main">
+            <input type="checkbox" class="slot-checkbox-input" ${isDone ? 'checked' : ''} onchange="app.toggleRoutineSlotCheck('${slot.id}', this.checked)">
             <div class="slot-title-text">${slot.title}</div>
           </div>
 
-          <!-- Bottom Row: Badges & Tags (Always wraps cleanly inside card) -->
-          <div class="slot-card-bottom">
-            <div class="slot-tags-row">
-              <span class="pill-badge ${subPill}">${slot.subject}</span>
-              <span class="pill-badge pill-amber">${slot.type}</span>
-              ${isLive ? '<span class="pill-badge pill-live">⚡ Ongoing Now</span>' : ''}
-            </div>
+          <!-- Bottom Row: Badges & Tags (Always neatly wrapped inside card) -->
+          <div class="slot-card-footer">
+            <span class="pill-badge ${subPill}">${slot.subject}</span>
+            <span class="pill-badge pill-amber">${slot.type}</span>
+            ${isLive ? '<span class="pill-badge pill-live">⚡ Active Now</span>' : ''}
           </div>
         </div>
       `;
@@ -568,7 +587,7 @@ class JeeTrackerPro {
       this.saveState();
       this.renderRoutineView();
       this.renderHome();
-      alert(`⚡ 12-Hour Dropper Template loaded for ${this.selectedRoutineDate}! You can edit or delete any slots.`);
+      alert(`⚡ 12-Hour Dropper Template loaded for ${this.formatDisplayDate(this.selectedRoutineDate)}! You can edit or delete any slots.`);
     }
   }
 
@@ -645,7 +664,7 @@ class JeeTrackerPro {
   }
 
   clearSlotsForSelectedDate() {
-    if (confirm(`Are you sure you want to clear all slots for ${this.selectedRoutineDate}?`)) {
+    if (confirm(`Are you sure you want to clear all slots for ${this.formatDisplayDate(this.selectedRoutineDate)}?`)) {
       this.state.dateRoutines[this.selectedRoutineDate] = [];
       this.state.routineChecks[this.selectedRoutineDate] = [];
       this.saveState();
@@ -1073,4 +1092,3 @@ class JeeTrackerPro {
 }
 
 const app = new JeeTrackerPro();
-
