@@ -1,6 +1,7 @@
 /**
  * JEE TRACKER PRO - CORE JAVASCRIPT ENGINE
- * Date-wise Routine Manager, Intuitive Syllabus Matrix, Question Counter Station (+1/-1),
+ * Date-wise Manual Custom Timetable, 12-Hour Dropper Template Loader,
+ * Intuitive Syllabus Tracker, Question Counter Station (+1/-1),
  * Comprehensive Mock Test Analytics, Mistake Notebook, Simple Stats & LocalStorage Sync.
  */
 
@@ -36,7 +37,7 @@ class JeeTrackerPro {
       targetExamDate: '2027-01-24',
       streak: { count: 1, lastActiveDate: today },
       
-      // Date-wise Routine: { "YYYY-MM-DD": [ { id, time, title, subject, type } ] }
+      // Date-wise Custom Routine: { "YYYY-MM-DD": [ { id, time, title, subject, type } ] }
       dateRoutines: {},
       // Date-wise Checked Slots: { "YYYY-MM-DD": [ slotId1, slotId2 ] }
       routineChecks: {},
@@ -65,7 +66,7 @@ class JeeTrackerPro {
         { id: 'mk2', subject: 'Chemistry', reason: 'Formula Forgot', chapRef: 'Electrochemistry Q08', rule: 'Remember minus sign: E_cell = E° - (0.0591/n) log Q at 298K.' }
       ],
 
-      // Daily Reflection & Notes: { "YYYY-MM-DD": { rating: 5, notes: "" } }
+      // Daily Reflection: { "YYYY-MM-DD": { rating: 5, notes: "" } }
       dailyReflections: {}
     };
   }
@@ -312,6 +313,20 @@ class JeeTrackerPro {
     const badge = document.getElementById('homeLiveBadge');
     if (!container) return;
 
+    if (slots.length === 0) {
+      container.innerHTML = `
+        <div style="font-size:0.88rem; color:var(--text-sub); display:flex; justify-content:space-between; align-items:center;">
+          <span>No timetable slots added for today yet.</span>
+          <button class="btn btn-primary btn-sm" onclick="app.switchTab('routine')">Plan Today</button>
+        </div>
+      `;
+      if (badge) {
+        badge.textContent = 'No Slots';
+        badge.className = 'pill-badge pill-subtle';
+      }
+      return;
+    }
+
     const now = new Date();
     const curMins = now.getHours() * 60 + now.getMinutes();
 
@@ -343,7 +358,7 @@ class JeeTrackerPro {
     } else {
       container.innerHTML = `
         <div style="font-size:0.88rem; color:var(--text-sub);">
-          🌟 No active slot right now. You are currently in free time or break.
+          🌟 You are currently between scheduled slots (Free / Break).
         </div>
       `;
       if (badge) {
@@ -353,14 +368,10 @@ class JeeTrackerPro {
     }
   }
 
-  // 2. TIMETABLE & ROUTINE (DATE-WISE PLANNER)
+  // 2. TIMETABLE & ROUTINE (MANUAL / CUSTOM DATE-WISE PLANNER)
   getSlotsForDate(dateStr) {
-    if (this.state.dateRoutines[dateStr] && this.state.dateRoutines[dateStr].length > 0) {
-      return this.state.dateRoutines[dateStr];
-    }
-    // Default fallback to standard 12-hr dropper routine if fresh
-    const defPreset = JEE_SYLLABUS_DATA.default_routines.dropper_12hr;
-    return defPreset ? [...defPreset.slots] : [];
+    // Return custom slots if set, otherwise empty array (manual by default!)
+    return this.state.dateRoutines[dateStr] || [];
   }
 
   selectRoutineDate(type) {
@@ -394,9 +405,50 @@ class JeeTrackerPro {
     this.renderRoutineView();
   }
 
+  calcSlotDuration(timeStr) {
+    try {
+      const parts = timeStr.split('-').map(s => s.trim());
+      if (parts.length === 2) {
+        const [h1, m1] = parts[0].split(':').map(Number);
+        const [h2, m2] = parts[1].split(':').map(Number);
+        const start = h1 * 60 + m1;
+        let end = h2 * 60 + m2;
+        if (end < start) end += 24 * 60; // overnight
+        const durMins = end - start;
+        const hrs = Math.floor(durMins / 60);
+        const mins = durMins % 60;
+        if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+        if (hrs > 0) return `${hrs}h`;
+        return `${mins}m`;
+      }
+    } catch(e){}
+    return '';
+  }
+
+  calcTotalPlannedHours(slots) {
+    let totMins = 0;
+    slots.forEach(slot => {
+      try {
+        const parts = slot.time.split('-').map(s => s.trim());
+        if (parts.length === 2) {
+          const [h1, m1] = parts[0].split(':').map(Number);
+          const [h2, m2] = parts[1].split(':').map(Number);
+          const start = h1 * 60 + m1;
+          let end = h2 * 60 + m2;
+          if (end < start) end += 24 * 60;
+          if (slot.type !== 'Break') {
+            totMins += (end - start);
+          }
+        }
+      } catch(e){}
+    });
+    return (totMins / 60).toFixed(1);
+  }
+
   renderRoutineView() {
     const container = document.getElementById('routineDateSlotsContainer');
     const label = document.getElementById('routineSelectedDateLabel');
+    const statsText = document.getElementById('routineDayStatsText');
     if (!container) return;
 
     const today = this.getTodayDateStr();
@@ -416,11 +468,25 @@ class JeeTrackerPro {
     const slots = this.getSlotsForDate(this.selectedRoutineDate);
     const checkedList = this.state.routineChecks[this.selectedRoutineDate] || [];
 
+    const plannedHours = this.calcTotalPlannedHours(slots);
+    const completedCount = slots.filter(s => checkedList.includes(s.id)).length;
+
+    if (statsText) {
+      statsText.textContent = `${slots.length} Planned Slots • ${completedCount}/${slots.length} Completed • ~${plannedHours} hrs Study`;
+    }
+
     if (slots.length === 0) {
       container.innerHTML = `
-        <div style="text-align:center; padding:2rem; color:var(--text-muted);">
-          <p>No slots planned for this date yet.</p>
-          <p style="font-size:0.8rem; margin-top:0.35rem;">Click <strong>+ Add Slot</strong> or select a <strong>Preset Template</strong> above!</p>
+        <div style="text-align:center; padding:2rem 1rem; background:var(--bg-card-elevated); border:1px dashed var(--border-color); border-radius:var(--radius-md); margin-top:0.5rem;">
+          <div style="font-size:2.2rem; margin-bottom:0.4rem;">📅</div>
+          <h4 style="font-size:1rem; font-weight:800; margin-bottom:0.25rem;">No Routine Slots for this Date</h4>
+          <p style="font-size:0.8rem; color:var(--text-sub); max-width:380px; margin:0 auto 1.25rem auto;">
+            Aap khud se custom manual slots add kar sakte hain, ya direct <strong>12-Hour Focused Dropper Template</strong> load kar sakte hain!
+          </p>
+          <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Custom Slot</button>
+            <button class="btn btn-accent btn-sm" onclick="app.load12HourTemplateForSelectedDate()">⚡ Load 12-Hour Dropper Template</button>
+          </div>
         </div>
       `;
       return;
@@ -442,20 +508,27 @@ class JeeTrackerPro {
         }
       }
 
+      const durText = this.calcSlotDuration(slot.time);
       const subPill = slot.subject === 'Physics' ? 'pill-phy' : (slot.subject === 'Chemistry' ? 'pill-chem' : (slot.subject === 'Mathematics' ? 'pill-math' : 'pill-amber'));
       return `
         <div class="routine-slot-row ${isLive ? 'active-slot' : ''} ${isDone ? 'completed-slot' : ''}" style="${isDone ? 'opacity:0.5; text-decoration:line-through;' : ''}">
-          <input type="checkbox" style="width:18px; height:18px; accent-color:var(--col-phy); cursor:pointer;" ${isDone ? 'checked' : ''} onchange="app.toggleRoutineSlotCheck('${slot.id}', this.checked)">
-          <div class="slot-time-badge">${slot.time}</div>
+          <input type="checkbox" style="width:19px; height:19px; accent-color:var(--col-phy); cursor:pointer;" ${isDone ? 'checked' : ''} onchange="app.toggleRoutineSlotCheck('${slot.id}', this.checked)">
+          <div class="slot-time-badge">
+            <span>${slot.time}</span>
+            ${durText ? `<span class="slot-duration-tag">${durText}</span>` : ''}
+          </div>
           <div style="flex:1;">
-            <div style="font-size:0.88rem; font-weight:700;">${slot.title}</div>
-            <div style="display:flex; gap:0.35rem; margin-top:0.2rem;">
+            <div style="font-size:0.9rem; font-weight:800;">${slot.title}</div>
+            <div style="display:flex; gap:0.35rem; margin-top:0.25rem; flex-wrap:wrap;">
               <span class="pill-badge ${subPill}">${slot.subject}</span>
               <span class="pill-badge pill-amber">${slot.type}</span>
-              ${isLive ? '<span class="pill-badge pill-phy">Ongoing Now</span>' : ''}
+              ${isLive ? '<span class="pill-badge pill-phy">⚡ Ongoing Slot</span>' : ''}
             </div>
           </div>
-          <button class="btn btn-danger btn-sm" onclick="app.deleteRoutineSlot('${slot.id}')" title="Delete slot">🗑️</button>
+          <div style="display:flex; gap:0.35rem;">
+            <button class="btn btn-subtle btn-sm" onclick="app.openEditSlotModal('${slot.id}')" title="Edit slot">✎</button>
+            <button class="btn btn-danger btn-sm" onclick="app.deleteRoutineSlot('${slot.id}')" title="Delete slot">🗑️</button>
+          </div>
         </div>
       `;
     }).join('');
@@ -475,21 +548,42 @@ class JeeTrackerPro {
     this.renderRoutineView();
   }
 
-  loadPresetForSelectedDate(presetKey) {
-    if (!presetKey) return;
-    const p = JEE_SYLLABUS_DATA.default_routines[presetKey];
+  load12HourTemplateForSelectedDate() {
+    const p = JEE_SYLLABUS_DATA.default_routines.dropper_12hr;
     if (p) {
       this.state.dateRoutines[this.selectedRoutineDate] = JSON.parse(JSON.stringify(p.slots));
       this.state.routineChecks[this.selectedRoutineDate] = [];
       this.saveState();
       this.renderRoutineView();
-      alert(`Loaded "${p.name}" template for ${this.selectedRoutineDate}!`);
+      this.renderHome();
+      alert(`⚡ 12-Hour Focused Dropper Routine loaded for ${this.selectedRoutineDate}! You can edit or delete any slots.`);
     }
-    document.getElementById('presetSelectDropdown').value = '';
   }
 
-  handleAddRoutineSlot(e) {
+  openEditSlotModal(slotId) {
+    const slots = this.getSlotsForDate(this.selectedRoutineDate);
+    const slot = slots.find(s => s.id === slotId);
+    if (!slot) return;
+
+    document.getElementById('editSlotId').value = slot.id;
+    document.getElementById('modalSlotHeaderTitle').textContent = '✎ Edit Routine Slot';
+    document.getElementById('btnSaveSlotSubmit').textContent = 'Update Slot';
+
+    const parts = slot.time.split('-').map(s => s.trim());
+    if (parts.length === 2) {
+      document.getElementById('inputSlotStart').value = parts[0];
+      document.getElementById('inputSlotEnd').value = parts[1];
+    }
+    document.getElementById('inputSlotTitle').value = slot.title;
+    document.getElementById('inputSlotSub').value = slot.subject;
+    document.getElementById('inputSlotType').value = slot.type;
+
+    this.openModal('modalSlot');
+  }
+
+  handleSaveRoutineSlot(e) {
     e.preventDefault();
+    const editId = document.getElementById('editSlotId').value;
     const start = document.getElementById('inputSlotStart').value;
     const end = document.getElementById('inputSlotEnd').value;
     const title = document.getElementById('inputSlotTitle').value;
@@ -497,31 +591,45 @@ class JeeTrackerPro {
     const type = document.getElementById('inputSlotType').value;
 
     if (!this.state.dateRoutines[this.selectedRoutineDate]) {
-      // Clone current slots or empty
-      const existing = this.getSlotsForDate(this.selectedRoutineDate);
-      this.state.dateRoutines[this.selectedRoutineDate] = JSON.parse(JSON.stringify(existing));
+      this.state.dateRoutines[this.selectedRoutineDate] = [];
     }
 
-    const newSlot = {
-      id: 'slot_' + Date.now(),
-      time: `${start} - ${end}`,
-      title, subject, type
-    };
+    if (editId) {
+      // Update existing
+      const slots = this.state.dateRoutines[this.selectedRoutineDate];
+      const target = slots.find(s => s.id === editId);
+      if (target) {
+        target.time = `${start} - ${end}`;
+        target.title = title;
+        target.subject = subject;
+        target.type = type;
+      }
+    } else {
+      // Add new slot
+      const newSlot = {
+        id: 'slot_' + Date.now(),
+        time: `${start} - ${end}`,
+        title, subject, type
+      };
+      this.state.dateRoutines[this.selectedRoutineDate].push(newSlot);
+    }
 
-    this.state.dateRoutines[this.selectedRoutineDate].push(newSlot);
     this.saveState();
     this.closeModal('modalSlot');
     e.target.reset();
+    document.getElementById('editSlotId').value = '';
+    document.getElementById('modalSlotHeaderTitle').textContent = '⏱️ Add Routine Slot';
+    document.getElementById('btnSaveSlotSubmit').textContent = 'Save Slot';
     this.renderRoutineView();
+    this.renderHome();
   }
 
   deleteRoutineSlot(slotId) {
-    if (!this.state.dateRoutines[this.selectedRoutineDate]) {
-      this.state.dateRoutines[this.selectedRoutineDate] = JSON.parse(JSON.stringify(this.getSlotsForDate(this.selectedRoutineDate)));
-    }
+    if (!this.state.dateRoutines[this.selectedRoutineDate]) return;
     this.state.dateRoutines[this.selectedRoutineDate] = this.state.dateRoutines[this.selectedRoutineDate].filter(s => s.id !== slotId);
     this.saveState();
     this.renderRoutineView();
+    this.renderHome();
   }
 
   clearSlotsForSelectedDate() {
@@ -530,6 +638,7 @@ class JeeTrackerPro {
       this.state.routineChecks[this.selectedRoutineDate] = [];
       this.saveState();
       this.renderRoutineView();
+      this.renderHome();
     }
   }
 
@@ -681,7 +790,7 @@ class JeeTrackerPro {
     listContainer.innerHTML = tests.map(t => {
       const att = (t.correct || 0) + (t.wrong || 0);
       const acc = att > 0 ? Math.round(((t.correct || 0) / att) * 100) : t.pct;
-      const negMarks = (t.wrong || 0) * 1; // Negative marks lost in JEE Main
+      const negMarks = (t.wrong || 0) * 1;
 
       return `
         <div class="mock-entry-card">
