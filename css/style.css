@@ -1,35 +1,35 @@
 /* ==========================================================================
-   JEE TRACKER PRO - ULTRA CLEAN, RESPONSIVE, BULLETPROOF STYLESHEET
-   100% Mobile Responsive, No Overflow, Beautiful Timetable & High Contrast
+   JEE TRACKER PRO - FLAWLESS MOBILE-FIRST STYLESHEET
+   Zero Overflow, Perfect Box Alignment, Beautiful Clean Modern Design
    ========================================================================== */
 
 :root {
-  --bg-app: #090d16;
-  --bg-card: #111827;
-  --bg-card-elevated: #1a2234;
-  --bg-input: #1f293d;
-  --border-color: rgba(255, 255, 255, 0.1);
+  --bg-app: #080c16;
+  --bg-card: #0f172a;
+  --bg-card-elevated: #162035;
+  --bg-input: #1e293b;
+  --border-color: rgba(255, 255, 255, 0.12);
   --border-focus: #00d2ff;
   
   --text-main: #ffffff;
-  --text-sub: #9ca3af;
-  --text-muted: #6b7280;
+  --text-sub: #94a3b8;
+  --text-muted: #64748b;
   
-  /* Vibrant Clean Subject Colors */
+  /* Subject Colors */
   --col-phy: #00d2ff;
-  --col-phy-bg: rgba(0, 210, 255, 0.12);
+  --col-phy-bg: rgba(0, 210, 255, 0.14);
   --col-chem: #10b981;
-  --col-chem-bg: rgba(16, 185, 129, 0.12);
+  --col-chem-bg: rgba(16, 185, 129, 0.14);
   --col-math: #a855f7;
-  --col-math-bg: rgba(168, 85, 247, 0.12);
+  --col-math-bg: rgba(168, 85, 247, 0.14);
   --col-amber: #f59e0b;
-  --col-amber-bg: rgba(245, 158, 11, 0.12);
-  --col-red: #ef4444;
-  --col-red-bg: rgba(239, 68, 68, 0.12);
+  --col-amber-bg: rgba(245, 158, 11, 0.14);
+  --col-red: #ff4d4d;
+  --col-red-bg: rgba(255, 77, 77, 0.16);
 
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
   --radius-full: 9999px;
 
   --bottom-nav-height: 64px;
@@ -37,15 +37,15 @@
 }
 
 [data-theme="light"] {
-  --bg-app: #f3f4f6;
+  --bg-app: #f1f5f9;
   --bg-card: #ffffff;
-  --bg-card-elevated: #f9fafb;
-  --bg-input: #e5e7eb;
-  --border-color: rgba(0, 0, 0, 0.1);
+  --bg-card-elevated: #f8fafc;
+  --bg-input: #e2e8f0;
+  --border-color: rgba(0, 0, 0, 0.12);
   --border-focus: #0284c7;
-  --text-main: #111827;
-  --text-sub: #4b5563;
-  --text-muted: #9ca3af;
+  --text-main: #0f172a;
+  --text-sub: #475569;
+  --text-muted: #94a3b8;
 }
 
 * {
@@ -67,7 +67,7 @@ body {
 
 .app-wrapper {
   width: 100%;
-  max-width: 650px;
+  max-width: 600px;
   min-height: 100vh;
   background: var(--bg-app);
   display: flex;
@@ -75,9 +75,9 @@ body {
   position: relative;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 900px) {
   .app-wrapper {
-    max-width: 900px;
+    max-width: 850px;
   }
 }
 
@@ -135,7 +135,7 @@ body {
 
 .streak-pill {
   background: var(--col-amber-bg);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   color: var(--col-amber);
   padding: 0.35rem 0.65rem;
   border-radius: var(--radius-full);
@@ -169,7 +169,7 @@ body {
 
 .view-panel {
   display: none;
-  animation: fadeIn 0.25s ease-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .view-panel.active {
@@ -177,7 +177,7 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -188,7 +188,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 1.15rem;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .card-title-row {
@@ -196,31 +196,36 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.85rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--border-color);
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+.card-heading-box {
+  flex: 1;
+  min-width: 0;
 }
 
 .card-heading {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  line-height: 1.25;
 }
 
 .card-subtitle {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-sub);
-  margin-top: 0.15rem;
+  margin-top: 0.2rem;
 }
 
 /* Badges */
 .pill-badge {
   padding: 0.25rem 0.55rem;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -234,7 +239,7 @@ body {
 .pill-chem { background: var(--col-chem-bg); color: var(--col-chem); border: 1px solid rgba(16, 185, 129, 0.3); }
 .pill-math { background: var(--col-math-bg); color: var(--col-math); border: 1px solid rgba(168, 85, 247, 0.3); }
 .pill-amber { background: var(--col-amber-bg); color: var(--col-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
-.pill-red { background: var(--col-red-bg); color: var(--col-red); border: 1px solid rgba(239, 68, 68, 0.3); }
+.pill-red { background: var(--col-red-bg); color: var(--col-red); border: 1px solid rgba(255, 77, 77, 0.3); }
 .pill-subtle { background: var(--bg-input); color: var(--text-sub); border: 1px solid var(--border-color); }
 
 /* Buttons */
@@ -251,6 +256,7 @@ body {
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn:active {
@@ -276,7 +282,7 @@ body {
 .btn-danger {
   background: var(--col-red-bg);
   color: var(--col-red);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(255, 77, 77, 0.35);
 }
 
 .btn-sm {
@@ -291,25 +297,26 @@ body {
   align-items: center;
   gap: 0.4rem;
   background: var(--bg-input);
-  padding: 0.4rem;
+  padding: 0.35rem;
   border-radius: var(--radius-md);
   margin-bottom: 1rem;
-  overflow-x: auto;
 }
 
 .date-tab-btn {
   flex: 1;
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.5rem;
   background: transparent;
   border: none;
   color: var(--text-sub);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   border-radius: var(--radius-sm);
   cursor: pointer;
   white-space: nowrap;
   text-align: center;
   transition: all 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .date-tab-btn.active {
@@ -318,126 +325,125 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Timetable Summary Card */
+/* Timetable Banner */
 .timetable-summary-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--bg-card-elevated);
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.9rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   margin-bottom: 1rem;
-  flex-wrap: wrap;
   gap: 0.6rem;
+  flex-wrap: wrap;
 }
 
 /* ==========================================================================
-   TIMETABLE SLOT CARD - ROBUST RESPONSIVE MULTI-ROW STACKED LAYOUT
+   PERFECT NON-OVERFLOWING TIMETABLE SLOT CARD
    ========================================================================== */
-.routine-slot-card {
+.slot-card {
   background: var(--bg-card-elevated);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 0.85rem 1rem;
+  padding: 0.85rem 0.95rem;
   margin-bottom: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.5rem;
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.routine-slot-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.routine-slot-card.active-slot {
+.slot-card.active-slot {
   border-color: var(--col-phy);
   background: linear-gradient(135deg, rgba(0, 210, 255, 0.12), rgba(168, 85, 247, 0.08));
   box-shadow: 0 0 16px rgba(0, 210, 255, 0.25);
 }
 
-.routine-slot-card.completed-slot {
+.slot-card.completed-slot {
   opacity: 0.55;
 }
 
-.slot-card-top {
+/* Top Header Row of Slot Card */
+.slot-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-.slot-time-group {
+.slot-time-pill {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.slot-check {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--col-phy);
-  cursor: pointer;
-}
-
-.slot-time-text {
+  gap: 0.4rem;
   background: var(--bg-input);
-  padding: 0.25rem 0.55rem;
+  padding: 0.25rem 0.6rem;
   border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  border: 1px solid var(--border-color);
+  font-size: 0.78rem;
   font-weight: 800;
   color: var(--col-amber);
-  letter-spacing: 0.3px;
 }
 
-.slot-dur-badge {
-  font-size: 0.72rem;
+.slot-dur-text {
+  font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 600;
 }
 
-.slot-actions {
+.slot-btn-group {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
-.btn-slot-icon {
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  width: 32px;
-  height: 32px;
+.slot-btn-action {
+  padding: 0.3rem 0.6rem;
   border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
   cursor: pointer;
-  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   transition: all 0.15s;
 }
 
-.btn-slot-icon:active {
-  transform: scale(0.9);
+.slot-btn-action:active {
+  transform: scale(0.92);
 }
 
-.btn-slot-del {
+.slot-btn-del {
   color: var(--col-red);
-  border-color: rgba(239, 68, 68, 0.3);
   background: var(--col-red-bg);
+  border-color: rgba(255, 77, 77, 0.35);
 }
 
-.btn-slot-edit {
+.slot-btn-edit {
   color: var(--col-phy);
-  border-color: rgba(0, 210, 255, 0.3);
   background: var(--col-phy-bg);
+  border-color: rgba(0, 210, 255, 0.35);
 }
 
-.slot-card-body {
-  padding: 0.1rem 0;
+/* Main Body Row of Slot Card */
+.slot-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.slot-checkbox-input {
+  width: 20px;
+  height: 20px;
+  margin-top: 0.15rem;
+  accent-color: var(--col-phy);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .slot-title-text {
@@ -446,33 +452,28 @@ body {
   color: var(--text-main);
   line-height: 1.35;
   word-break: break-word;
+  flex: 1;
 }
 
-.routine-slot-card.completed-slot .slot-title-text {
+.slot-card.completed-slot .slot-title-text {
   text-decoration: line-through;
 }
 
-.slot-card-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  padding-top: 0.4rem;
-  border-top: 1px dashed var(--border-color);
-}
-
-.slot-tags-row {
+/* Bottom Footer Row of Slot Card */
+.slot-card-footer {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--border-color);
 }
 
 .pill-live {
   background: rgba(0, 210, 255, 0.2);
   color: var(--col-phy);
   border: 1px solid var(--col-phy);
+  font-weight: 800;
   animation: pulseGlow 2s infinite ease-in-out;
 }
 
@@ -536,7 +537,7 @@ body {
 .btn-q-dec {
   background: var(--col-red-bg);
   color: var(--col-red);
-  border-color: rgba(239, 68, 68, 0.4);
+  border-color: rgba(255, 77, 77, 0.4);
 }
 
 /* Syllabus Chapter Cards */
@@ -649,7 +650,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 650px;
+  max-width: 600px;
   height: var(--bottom-nav-height);
   background: var(--bg-card);
   border-top: 1px solid var(--border-color);
@@ -660,9 +661,9 @@ body {
   padding: 0 0.25rem;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 900px) {
   .bottom-nav-bar {
-    max-width: 900px;
+    max-width: 850px;
   }
 }
 
@@ -716,7 +717,7 @@ body {
 
 .modal-sheet {
   width: 100%;
-  max-width: 650px;
+  max-width: 600px;
   background: var(--bg-card);
   border-top-left-radius: var(--radius-lg);
   border-top-right-radius: var(--radius-lg);
