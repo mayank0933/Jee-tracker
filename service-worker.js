@@ -1,5 +1,5 @@
-const CACHE_NAME = 'jee-pro-android-v3.0';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'jee-tracker-pro-v4.0';
+const ASSETS = [
   './',
   './index.html',
   './css/style.css',
@@ -10,36 +10,27 @@ const ASSETS_TO_CACHE = [
   './icons/icon-512.png'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)).then(() => self.skipWaiting())
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.map(k => {
+      if (k !== CACHE_NAME) return caches.delete(k);
+    }))).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') return response;
-        const cloned = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
-        return response;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') return caches.match('./index.html');
-      });
-    })
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request).then(resp => {
+      if (!resp || resp.status !== 200 || resp.type !== 'basic') return resp;
+      const clone = resp.clone();
+      caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+      return resp;
+    }).catch(() => {
+      if (e.request.mode === 'navigate') return caches.match('./index.html');
+    }))
   );
 });
