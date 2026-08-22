@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>JEE Prep Pro - Routine, Task & Syllabus Tracker</title>
+  <meta name="description" content="All-in-one JEE Main & Advanced Daily Routine, Task Manager, Syllabus Tracker, 3-Hr Exam Focus Timer, Mock Test & Mistake Analyzer for IIT JEE Aspirants.">
+  <meta name="theme-color" content="#090d16">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Desktop Sidebar -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-header">
+      <div class="logo-badge">⚡</div>
+      <div class="logo-text">
+        <h2>JEE Prep Pro</h2>
+        <span>Target Top 100 AIR</span>
+      </div>
+    </div>
+
+    <ul class="nav-links">
+      <li class="nav-item active" data-view="dashboard">
+        <span class="icon">🏠</span>
+        <span>Dashboard</span>
+      </li>
+      <li class="nav-item" data-view="routine">
+        <span class="icon">⏱️</span>
+        <span>Daily Routine</span>
+      </li>
+      <li class="nav-item" data-view="tasks">
+        <span class="icon">🎯</span>
+        <span>Tasks & Q-Targets</span>
+      </li>
+      <li class="nav-item" data-view="syllabus">
+        <span class="icon">📚</span>
+        <span>Syllabus Tracker</span>
+      </li>
+      <li class="nav-item" data-view="timer">
+        <span class="icon">⏳</span>
+        <span>Focus & 3h Mock Timer</span>
+      </li>
+      <li class="nav-item" data-view="mock-tests">
+        <span class="icon">📝</span>
+        <span>Mock Tests & Mistake Book</span>
+      </li>
+      <li class="nav-item" data-view="formulas">
+        <span class="icon">⚡</span>
+        <span>Formula Vault</span>
+      </li>
+      <li class="nav-item" data-view="analytics">
+        <span class="icon">📊</span>
+        <span>Deep Analytics</span>
+      </li>
+      <li class="nav-item" data-view="settings">
+        <span class="icon">⚙️</span>
+        <span>Settings & Backup</span>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <p>JEE Main & Adv 2026/27</p>
+      <span style="font-size:0.75rem; color:var(--text-muted);">100% Offline PWA Ready</span>
+    </div>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <main class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle Menu">☰</button>
+        <div class="countdown-badge" id="jeeCountdownBadge" title="Click to customize exam date">
+          ⏳ <span id="countdownText">Loading Countdown...</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="streak-pill" id="streakPill" title="Daily study streak">
+          🔥 <span id="streakCount">1</span> Day Streak
+        </div>
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode">🌙</button>
+        <button class="install-btn" id="pwaInstallBtn" style="display:none;" title="Install JEE Prep Pro as App">📲 Install</button>
+      </div>
+    </header>
+
+    <!-- Page Content Container -->
+    <div class="content-body">
+
+      <!-- 1. DASHBOARD VIEW -->
+      <section class="view-section active" id="view-dashboard">
+        <!-- Live Quick Glance Alert -->
+        <div class="card" style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(124, 58, 237, 0.15)); border: 1px solid rgba(56, 189, 248, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem;">👋 Welcome Back, Future IITian!</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);" id="dashboardDailyQuote">"Consistent daily problem solving beats sporadic brilliance. Win today's routine!"</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-primary btn-sm" onclick="app.switchView('routine')">⚡ View Current Routine Slot</button>
+              <button class="btn btn-accent btn-sm" onclick="app.switchView('timer')">⏳ Start Study Session</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards -->
+        <div class="grid-4">
+          <div class="stat-box">
+            <div class="stat-icon-wrapper stat-icon-gen">⏱️</div>
+            <div class="stat-info">
+              <div class="stat-value" id="dashTodayHours">0.0h</div>
+              <div class="stat-label">Study Time Today (Goal: 10h)</div>
+              <div class="progress-container">
+                <div class="progress-fill fill-accent" id="dashHoursBar" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-icon-wrapper stat-icon-phy">🎯</div>
+            <div class="stat-info">
+              <div class="stat-value" id="dashQuestionsSolved">0</div>
+              <div class="stat-label">Questions Solved Today</div>
+              <div class="progress-container">
+                <div class="progress-fill fill-phy" id="dashQuestionsBar" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-icon-wrapper stat-icon-chem">✅</div>
+            <div class="stat-info">
+              <div class="stat-value" id="dashTasksCompleted">0/0</div>
+              <div class="stat-label">Daily Tasks Completed</div>
+              <div class="progress-container">
+                <div class="progress-fill fill-chem" id="dashTasksBar" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-icon-wrapper stat-icon-math">📚</div>
+            <div class="stat-info">
+              <div class="stat-value" id="dashSyllabusCovered">0%</div>
+              <div class="stat-label">Overall PCM Syllabus Mastered</div>
+              <div class="progress-container">
+                <div class="progress-fill fill-math" id="dashSyllabusBar" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Column Layout for Current Slot & Daily Task Preview -->
+        <div class="grid-2" style="margin-top: 1.25rem;">
+          <!-- Current Live Routine Slot Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🕒 Live Routine Tracker</div>
+              <span class="badge badge-high" id="liveSlotStatusBadge">Ongoing Slot</span>
+            </div>
+            <div id="dashLiveSlotContainer" style="padding: 0.5rem 0;">
+              <!-- Populated dynamically -->
+            </div>
+            <div style="margin-top: 0.75rem; display: flex; justify-content: flex-end;">
+              <button class="btn btn-secondary btn-sm" onclick="app.switchView('routine')">Full Daily Timetable →</button>
+            </div>
+          </div>
+
+          <!-- Quick Daily Target / Questions Split -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 Subject Question Split Today</div>
+              <button class="btn btn-primary btn-sm" onclick="app.openModal('modalAddTask')">+ Add Task</button>
+            </div>
+            <div class="q-target-row" style="margin-bottom: 0.75rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span class="badge badge-phy">Physics</span>
+                <span id="dashPhyQCount" style="font-weight:700;">0 / 30 Qs</span>
+              </div>
+              <div class="counter-btns">
+                <button class="counter-num-btn" onclick="app.adjustQuestions('physics', -5)">-5</button>
+                <button class="counter-num-btn" onclick="app.adjustQuestions('physics', 5)">+5</button>
+              </div>
+            </div>
+            <div class="q-target-row" style="margin-bottom: 0.75rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span class="badge badge-chem">Chemistry</span>
+                <span id="dashChemQCount" style="font-weight:700;">0 / 35 Qs</span>
+              </div>
+              <div class="counter-btns">
+                <button class="counter-num-btn" onclick="app.adjustQuestions('chemistry', -5)">-5</button>
+                <button class="counter-num-btn" onclick="app.adjustQuestions('chemistry', 5)">+5</button>
+              </div>
+            </div>
+            <div class="q-target-row">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span class="badge badge-math">Mathematics</span>
+                <span id="dashMathQCount" style="font-weight:700;">0 / 35 Qs</span>
+              </div>
+              <div class="counter-btns">
+                <button class="counter-num-btn" onclick="app.adjustQuestions('mathematics', -5)">-5</button>
+                <button class="counter-num-btn" onclick="app.adjustQuestions('mathematics', 5)">+5</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Subject Progress Breakdown -->
+        <div class="card" style="margin-top: 1.25rem;">
+          <div class="card-header">
+            <div class="card-title">📈 JEE Syllabus Milestones by Subject</div>
+            <button class="btn btn-secondary btn-sm" onclick="app.switchView('syllabus')">Detailed Syllabus Tracker →</button>
+          </div>
+          <div class="grid-3">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; margin-bottom:0.25rem;">
+                <span style="color:var(--color-phy);">Physics (27 Chapters)</span>
+                <span id="dashPhyPercent">0%</span>
+              </div>
+              <div class="progress-container"><div class="progress-fill fill-phy" id="dashPhyBar" style="width:0%;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; margin-bottom:0.25rem;">
+                <span style="color:var(--color-chem);">Chemistry (25 Chapters)</span>
+                <span id="dashChemPercent">0%</span>
+              </div>
+              <div class="progress-container"><div class="progress-fill fill-chem" id="dashChemBar" style="width:0%;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600; margin-bottom:0.25rem;">
+                <span style="color:var(--color-math);">Mathematics (23 Chapters)</span>
+                <span id="dashMathPercent">0%</span>
+              </div>
+              <div class="progress-container"><div class="progress-fill fill-math" id="dashMathBar" style="width:0%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. DAILY ROUTINE VIEW -->
+      <section class="view-section" id="view-routine">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⏱️ Daily Study Routine & Timetable</div>
+              <div class="card-desc">Follow your timed slots rigorously. Active slot highlights automatically based on current clock time.</div>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              <select id="routinePresetSelect" style="width:auto; padding:0.4rem 0.75rem; font-size:0.85rem;" onchange="app.changeRoutinePreset(this.value)">
+                <option value="dropper_12hr">12-Hour Focused Dropper Routine</option>
+                <option value="school_6hr">6-8 Hour School-Going Routine</option>
+                <option value="weekend_marathon">Weekend Marathon & Mock Routine</option>
+                <option value="custom">My Custom Routine</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="app.openModal('modalAddSlot')">+ Add Slot</button>
+              <button class="btn btn-secondary btn-sm" onclick="app.resetDailyRoutineChecks()">Reset Today's Checks</button>
+            </div>
+          </div>
+
+          <div id="routineSlotsList">
+            <!-- Dynamic Slot Items List -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. TASKS & Q-TARGETS VIEW -->
+      <section class="view-section" id="view-tasks">
+        <div class="grid-2">
+          <!-- Daily Targets & Checklist -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎯 Today's Action Checklist</div>
+                <div class="card-desc">Daily prioritized study targets & chapter DPPs</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="app.openModal('modalAddTask')">+ Add Task</button>
+            </div>
+
+            <!-- Filter Badges -->
+            <div style="display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap;">
+              <button class="badge badge-high" style="cursor:pointer;" onclick="app.filterTasks('ALL')">All</button>
+              <button class="badge badge-phy" style="cursor:pointer;" onclick="app.filterTasks('Physics')">Physics</button>
+              <button class="badge badge-chem" style="cursor:pointer;" onclick="app.filterTasks('Chemistry')">Chemistry</button>
+              <button class="badge badge-math" style="cursor:pointer;" onclick="app.filterTasks('Mathematics')">Maths</button>
+            </div>
+
+            <div id="tasksChecklistContainer">
+              <!-- Task List items -->
+            </div>
+          </div>
+
+          <!-- Daily Question Practice Station -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🔢 Daily Problem Solving Tracker</div>
+                <div class="card-desc">Target: 100+ high-quality JEE questions per day</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="app.resetDailyQuestions()">Reset Today</button>
+            </div>
+
+            <div class="q-counter-card" style="margin-bottom:1rem;">
+              <div class="q-target-row">
+                <div>
+                  <h4 style="color:var(--color-phy);">⚛️ Physics Problem Solving</h4>
+                  <div style="font-size:0.8rem; color:var(--text-secondary);">HC Verma, Irodov, PYQs, Coaching Sheets</div>
+                </div>
+                <div style="text-align:right;">
+                  <span id="pagePhyQ" style="font-size:1.4rem; font-weight:800; color:var(--color-phy);">0</span>
+                  <span style="font-size:0.85rem; color:var(--text-muted);">/ 30 Qs</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="app.adjustQuestions('physics', 1)">+1</button>
+                <button class="btn btn-secondary btn-sm" onclick="app.adjustQuestions('physics', 5)">+5</button>
+                <button class="btn btn-primary btn-sm" onclick="app.adjustQuestions('physics', 10)">+10</button>
+              </div>
+            </div>
+
+            <div class="q-counter-card" style="margin-bottom:1rem;">
+              <div class="q-target-row">
+                <div>
+                  <h4 style="color:var(--color-chem);">🧪 Chemistry Numericals & Reactions</h4>
+                  <div style="font-size:0.8rem; color:var(--text-secondary);">MS Chouhan, N Awasthi, VK Jaiswal, NCERT</div>
+                </div>
+                <div style="text-align:right;">
+                  <span id="pageChemQ" style="font-size:1.4rem; font-weight:800; color:var(--color-chem);">0</span>
+                  <span style="font-size:0.85rem; color:var(--text-muted);">/ 35 Qs</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="app.adjustQuestions('chemistry', 1)">+1</button>
+                <button class="btn btn-secondary btn-sm" onclick="app.adjustQuestions('chemistry', 5)">+5</button>
+                <button class="btn btn-primary btn-sm" onclick="app.adjustQuestions('chemistry', 10)">+10</button>
+              </div>
+            </div>
+
+            <div class="q-counter-card">
+              <div class="q-target-row">
+                <div>
+                  <h4 style="color:var(--color-math);">📐 Mathematics Rigorous Practice</h4>
+                  <div style="font-size:0.8rem; color:var(--text-secondary);">Cengage, Black Book, Sameer Bansal, PYQs</div>
+                </div>
+                <div style="text-align:right;">
+                  <span id="pageMathQ" style="font-size:1.4rem; font-weight:800; color:var(--color-math);">0</span>
+                  <span style="font-size:0.85rem; color:var(--text-muted);">/ 35 Qs</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="app.adjustQuestions('mathematics', 1)">+1</button>
+                <button class="btn btn-secondary btn-sm" onclick="app.adjustQuestions('mathematics', 5)">+5</button>
+                <button class="btn btn-primary btn-sm" onclick="app.adjustQuestions('mathematics', 10)">+10</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. SYLLABUS TRACKER VIEW -->
+      <section class="view-section" id="view-syllabus">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📚 Official JEE Main & Advanced Syllabus Tracker</div>
+              <div class="card-desc">Track Theory, Notes, Problem Solving, 5-Yr PYQs, 10-Yr PYQs, and 2 Revision cycles per chapter.</div>
+            </div>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <input type="text" id="syllabusSearchInput" placeholder="🔍 Search chapter or topic..." style="max-width:220px; padding:0.4rem 0.65rem;" oninput="app.filterSyllabus()">
+              <select id="syllabusClassFilter" style="width:auto; padding:0.4rem 0.65rem;" onchange="app.filterSyllabus()">
+                <option value="ALL">All Classes (11th & 12th)</option>
+                <option value="11">Class 11 Only</option>
+                <option value="12">Class 12 Only</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Subject Tabs -->
+          <div class="subject-tabs">
+            <button class="subject-tab-btn active-phy" id="btnTabPhy" onclick="app.switchSyllabusSubject('physics')">⚛️ Physics (<span id="sylPhyDone">0</span>/27 Done)</button>
+            <button class="subject-tab-btn" id="btnTabChem" onclick="app.switchSyllabusSubject('chemistry')">🧪 Chemistry (<span id="sylChemDone">0</span>/25 Done)</button>
+            <button class="subject-tab-btn" id="btnTabMath" onclick="app.switchSyllabusSubject('mathematics')">📐 Mathematics (<span id="sylMathDone">0</span>/23 Done)</button>
+          </div>
+
+          <!-- Chapter Items Accordion / Cards List -->
+          <div id="syllabusChaptersList">
+            <!-- Dynamic Chapters Render -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. FOCUS TIMER & 3-HR EXAM SIMULATION VIEW -->
+      <section class="view-section" id="view-timer">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⏳ JEE Focus Timer & Real Exam Simulator</div>
+              <div class="card-desc">Simulate actual 3-Hour JEE Exam Hall conditions (9 AM - 12 PM / 3 PM - 6 PM) or standard Pomodoro.</div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <select id="timerSubjectTag" style="width:auto; padding:0.4rem 0.65rem;">
+                <option value="Physics">Physics Session</option>
+                <option value="Chemistry">Chemistry Session</option>
+                <option value="Mathematics">Mathematics Session</option>
+                <option value="Full Mock">Full 3h Mock Exam</option>
+                <option value="General">General Study / Revision</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Timer Presets Row -->
+          <div style="display:flex; justify-content:center; gap:0.65rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="app.setTimerMode(25, '25m Pomodoro')">🍅 25m Pomodoro</button>
+            <button class="btn btn-secondary btn-sm" onclick="app.setTimerMode(50, '50m Deep Work')">⚡ 50m Deep Focus</button>
+            <button class="btn btn-secondary btn-sm" onclick="app.setTimerMode(90, '90m Advance Slot')">🔥 90m Subject Slot</button>
+            <button class="btn btn-accent btn-sm" onclick="app.setTimerMode(180, '3-Hour Real JEE Mock')">🏆 3-Hour Real JEE Sim (180m)</button>
+          </div>
+
+          <!-- Circular Digital Display -->
+          <div class="timer-container">
+            <div class="timer-circle" id="timerCircleElement">
+              <div class="timer-digits" id="timerDigitsDisplay">25:00</div>
+              <div class="timer-mode-label" id="timerModeLabel">25m Pomodoro</div>
+            </div>
+
+            <div class="timer-controls">
+              <button class="btn btn-primary" id="timerToggleBtn" onclick="app.toggleTimer()" style="min-width: 120px; font-size:1rem;">▶️ Start Focus</button>
+              <button class="btn btn-secondary" onclick="app.resetTimer()">🔄 Reset</button>
+            </div>
+          </div>
+
+          <!-- Study Sessions Log Today -->
+          <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+            <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;">📜 Study Sessions Logged Today</h4>
+            <div id="todaySessionsLogList" style="display:flex; flex-direction:column; gap:0.4rem;">
+              <!-- Dynamic session log -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. MOCK TESTS & MISTAKE BOOK VIEW -->
+      <section class="view-section" id="view-mock-tests">
+        <div class="grid-2">
+          <!-- Mock Test Score Matrix -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📝 Mock Test Scoreboard (out of 300)</div>
+                <div class="card-desc">Track test performance, accuracy, and trends</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="app.openModal('modalAddMock')">+ Log Mock Test</button>
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="mock-table" id="mockTestsTable">
+                <thead>
+                  <tr>
+                    <th>Test Name</th>
+                    <th>Date</th>
+                    <th>Phy</th>
+                    <th>Chem</th>
+                    <th>Math</th>
+                    <th>Total</th>
+                    <th>%</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="mockTestsTableBody">
+                  <!-- Dynamic Mock Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Mistake Book / Error Log -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📖 JEE Mistake Book (Error Analyzer)</div>
+                <div class="card-desc">Review silly mistakes & conceptual leaks before tests</div>
+              </div>
+              <button class="btn btn-accent btn-sm" onclick="app.openModal('modalAddMistake')">+ Add Mistake</button>
+            </div>
+
+            <div id="mistakeBookListContainer">
+              <!-- Dynamic Mistake Cards -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. FORMULA VAULT VIEW -->
+      <section class="view-section" id="view-formulas">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⚡ High-Yield Formula Vault & Key Notes</div>
+              <div class="card-desc">Instant formula reference cards and personal shortcuts.</div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="text" id="formulaSearchInput" placeholder="🔍 Search formula..." style="max-width:200px; padding:0.4rem 0.65rem;" oninput="app.filterFormulas()">
+              <button class="btn btn-primary btn-sm" onclick="app.openModal('modalAddFormula')">+ Add Custom Formula</button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+            <button class="badge badge-high" style="cursor:pointer;" onclick="app.filterFormulaSubject('ALL')">All Subjects</button>
+            <button class="badge badge-phy" style="cursor:pointer;" onclick="app.filterFormulaSubject('physics')">Physics</button>
+            <button class="badge badge-chem" style="cursor:pointer;" onclick="app.filterFormulaSubject('chemistry')">Chemistry</button>
+            <button class="badge badge-math" style="cursor:pointer;" onclick="app.filterFormulaSubject('mathematics')">Maths</button>
+          </div>
+
+          <div id="formulaCardsGrid" class="grid-2">
+            <!-- Dynamic Formula Cards -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. DEEP ANALYTICS VIEW -->
+      <section class="view-section" id="view-analytics">
+        <div class="grid-2">
+          <!-- 7-Day Study Hours Chart -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 7-Day Study Hours Breakdown</div>
+              <span class="badge badge-gen" id="analyticsAvgHours">Avg: 0.0 hrs/day</span>
+            </div>
+            <div style="position:relative; width:100%; height:240px; display:flex; align-items:center; justify-content:center;">
+              <canvas id="canvasDailyTrend" width="450" height="220" style="width:100%; height:100%;"></canvas>
+            </div>
+          </div>
+
+          <!-- Subject Time Allocation Donut -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">⚖️ PCM Balance (Study Time Distribution)</div>
+              <span class="badge badge-med">Target: 33% Each</span>
+            </div>
+            <div style="position:relative; width:100%; height:240px; display:flex; align-items:center; justify-content:center;">
+              <canvas id="canvasSubjectBalance" width="450" height="220" style="width:100%; height:100%;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mock Test Score Progression Chart -->
+        <div class="card" style="margin-top:1.25rem;">
+          <div class="card-header">
+            <div class="card-title">📈 Mock Test Marks Progression</div>
+            <div class="card-desc">Visualizing total marks out of 300 across your tests</div>
+          </div>
+          <div style="position:relative; width:100%; height:240px; display:flex; align-items:center; justify-content:center;">
+            <canvas id="canvasMockProgression" width="900" height="220" style="width:100%; height:100%;"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. SETTINGS & BACKUP VIEW -->
+      <section class="view-section" id="view-settings">
+        <div class="grid-2">
+          <!-- Backup & Data Persistence -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">💾 Backup & Sync Local Data</div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">
+              Your entire study routine, syllabus progress, mistake logs, and task data is stored securely offline on your device. Export a backup anytime!
+            </p>
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+              <button class="btn btn-primary" onclick="app.exportBackupJSON()">📥 Export Full Data Backup (.JSON)</button>
+              
+              <div>
+                <label style="font-size:0.8rem; font-weight:600; margin-bottom:0.25rem; display:block;">Restore Data from JSON:</label>
+                <input type="file" id="importJsonInput" accept=".json" onchange="app.importBackupJSON(event)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Exam Customizer & Dangerous Actions -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🎯 Exam Date & Reset Controls</div>
+            </div>
+            
+            <div style="margin-bottom:1rem;">
+              <label style="font-size:0.82rem; font-weight:600; margin-bottom:0.35rem; display:block;">Target JEE Exam Date:</label>
+              <input type="date" id="settingsExamDate" onchange="app.saveExamDate(this.value)">
+            </div>
+
+            <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+              <h4 style="color:var(--color-danger); font-size:0.9rem; margin-bottom:0.5rem;">⚠️ Danger Zone</h4>
+              <button class="btn btn-danger btn-sm" onclick="app.resetAllData()">🗑️ Reset All Data to Factory Default</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Mobile Bottom Nav Bar -->
+<nav class="mobile-bottom-nav">
+  <div class="mobile-nav-item active" data-view="dashboard">
+    <span class="icon">🏠</span>
+    <span>Home</span>
+  </div>
+  <div class="mobile-nav-item" data-view="routine">
+    <span class="icon">⏱️</span>
+    <span>Routine</span>
+  </div>
+  <div class="mobile-nav-item" data-view="tasks">
+    <span class="icon">🎯</span>
+    <span>Tasks</span>
+  </div>
+  <div class="mobile-nav-item" data-view="syllabus">
+    <span class="icon">📚</span>
+    <span>Syllabus</span>
+  </div>
+  <div class="mobile-nav-item" data-view="timer">
+    <span class="icon">⏳</span>
+    <span>Timer</span>
+  </div>
+  <div class="mobile-nav-item" data-view="mock-tests">
+    <span class="icon">📝</span>
+    <span>Mocks</span>
+  </div>
+</nav>
+
+<!-- ================= MODALS ================= -->
+
+<!-- Modal: Add Task -->
+<div class="modal-backdrop" id="modalAddTask">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🎯 Add New Study Task</h3>
+      <button class="modal-close-btn" onclick="app.closeModal('modalAddTask')">✕</button>
+    </div>
+    <form onsubmit="app.handleAddTask(event)">
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Task Description *</label>
+        <input type="text" id="taskInputText" placeholder="e.g. Solve 25 PYQs of Rotational Dynamics" required>
+      </div>
+      <div class="grid-2" style="margin-bottom:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Subject</label>
+          <select id="taskInputSubject">
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="General">General / Mock</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Priority</label>
+          <select id="taskInputPriority">
+            <option value="High">🔴 High Priority (Must Do)</option>
+            <option value="Medium" selected>🟡 Medium</option>
+            <option value="Low">🟢 Low</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('modalAddTask')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Add Custom Routine Slot -->
+<div class="modal-backdrop" id="modalAddSlot">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>⏱️ Add Custom Routine Slot</h3>
+      <button class="modal-close-btn" onclick="app.closeModal('modalAddSlot')">✕</button>
+    </div>
+    <form onsubmit="app.handleAddRoutineSlot(event)">
+      <div class="grid-2" style="margin-bottom:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Start Time *</label>
+          <input type="time" id="slotStartTime" required>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">End Time *</label>
+          <input type="time" id="slotEndTime" required>
+        </div>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Slot Activity / Title *</label>
+        <input type="text" id="slotTitle" placeholder="e.g. Organic Reaction Mechanisms Practice" required>
+      </div>
+      <div class="grid-2" style="margin-bottom:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Subject</label>
+          <select id="slotSubject">
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Mixed">Mixed / Mock</option>
+            <option value="General">General / Break</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Activity Type</label>
+          <select id="slotType">
+            <option value="Practice">Problem Solving / Practice</option>
+            <option value="Lecture">Lecture / Class</option>
+            <option value="Revision">Formula / Revision</option>
+            <option value="Mock Test">Mock Test</option>
+            <option value="Break">Break / Refreshment</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('modalAddSlot')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Slot</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Add Mock Test Score -->
+<div class="modal-backdrop" id="modalAddMock">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📝 Log Mock Test Score</h3>
+      <button class="modal-close-btn" onclick="app.closeModal('modalAddMock')">✕</button>
+    </div>
+    <form onsubmit="app.handleAddMockTest(event)">
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Test Name / Series *</label>
+        <input type="text" id="mockInputName" placeholder="e.g. JEE Main 2024 Jan 27 Shift 1 (or Allen AITS-04)" required>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Date</label>
+        <input type="date" id="mockInputDate" required>
+      </div>
+      <div class="grid-3" style="margin-bottom:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem; color:var(--color-phy);">Physics (/100)</label>
+          <input type="number" id="mockInputPhy" min="0" max="100" placeholder="0-100" required>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem; color:var(--color-chem);">Chemistry (/100)</label>
+          <input type="number" id="mockInputChem" min="0" max="100" placeholder="0-100" required>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem; color:var(--color-math);">Maths (/100)</label>
+          <input type="number" id="mockInputMath" min="0" max="100" placeholder="0-100" required>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('modalAddMock')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Test Score</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Add Mistake Entry -->
+<div class="modal-backdrop" id="modalAddMistake">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📖 Add Mistake Book Entry</h3>
+      <button class="modal-close-btn" onclick="app.closeModal('modalAddMistake')">✕</button>
+    </div>
+    <form onsubmit="app.handleAddMistake(event)">
+      <div class="grid-2" style="margin-bottom:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Subject</label>
+          <select id="mistakeSubject">
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Mathematics">Mathematics</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Mistake Type</label>
+          <select id="mistakeType">
+            <option value="Calculation Error">Calculation Error (2+3=6 type)</option>
+            <option value="Formula Forgot">Forgot / Wrong Formula Used</option>
+            <option value="Question Misread">Misread Question / Units (cm vs m)</option>
+            <option value="Conceptual Gap">Conceptual Gap / Incomplete Theory</option>
+            <option value="Time Rush">Time Pressure / Rushed Solving</option>
+            <option value="Silly Mistake">Silly Negative Marking Guess</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Chapter & Question Reference *</label>
+        <input type="text" id="mistakeChapter" placeholder="e.g. Rotational Dynamics - Q14 (Moment of inertia parallel axis)" required>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Key Takeaway / Never Repeat Rule *</label>
+        <textarea id="mistakeTakeaway" rows="3" placeholder="e.g. Parallel axis theorem d must be from Center of Mass, not from any arbitrary axis!" required></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('modalAddMistake')">Cancel</button>
+        <button type="submit" class="btn btn-accent">Save to Mistake Book</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Add Formula -->
+<div class="modal-backdrop" id="modalAddFormula">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>⚡ Add Formula / Key Note</h3>
+      <button class="modal-close-btn" onclick="app.closeModal('modalAddFormula')">✕</button>
+    </div>
+    <form onsubmit="app.handleAddFormula(event)">
+      <div class="grid-2" style="margin-bottom:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Subject</label>
+          <select id="formulaSubject">
+            <option value="physics">Physics</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="mathematics">Mathematics</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Chapter Name</label>
+          <input type="text" id="formulaChapter" placeholder="e.g. Electrostatics" required>
+        </div>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Formula Title *</label>
+        <input type="text" id="formulaTitle" placeholder="e.g. Electric Field of Ring on Axis" required>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Formula Expression *</label>
+        <input type="text" id="formulaExpr" placeholder="e.g. E = k Q x / (R^2 + x^2)^(3/2)" required>
+      </div>
+      <div style="margin-bottom:0.75rem;">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:0.25rem;">Short Tip / Condition</label>
+        <textarea id="formulaNote" rows="2" placeholder="e.g. Maximum at x = R / sqrt(2)."></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('modalAddFormula')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Formula</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/syllabus-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
