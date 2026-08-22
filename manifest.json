@@ -1,12 +1,11 @@
 {
-  "name": "JEE Pro - IIT JEE Companion",
-  "short_name": "JEE Pro",
-  "description": "Premium Android-Style Daily Routine, Task Manager, Syllabus Tracker, 3-Hr Exam Sim & Mistake Notebook for IIT-JEE Aspirants",
+  "name": "JEE Tracker Pro - Routine, Syllabus & Mocks",
+  "short_name": "JEE Tracker Pro",
+  "description": "Clean, intuitive Daily Timetable, Syllabus Tracker, Question Counter & Mock Test Analyzer for JEE Aspirants",
   "start_url": "./index.html",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "background_color": "#07090e",
-  "theme_color": "#07090e",
+  "background_color": "#0a0f1d",
+  "theme_color": "#0a0f1d",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -20,23 +19,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Live Routine",
-      "url": "./index.html#routine",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Start Focus Timer",
-      "url": "./index.html#timer",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Mistake Book",
-      "url": "./index.html#mock-tests",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "categories": ["education", "productivity"]
