@@ -1,13 +1,14 @@
 /**
- * JEE TRACKER PRO - CORE JAVASCRIPT ENGINE
- * Date-wise Manual Custom Timetable, 12-Hour Dropper Template Loader,
+ * JEE TRACKER PRO - CORE JAVASCRIPT ENGINE (V5 Clean & Robust)
+ * 100% Manual Custom Routine by Default, On-Demand 12-Hour Dropper Template,
+ * Non-Overflowing Mobile-First Timetable Cards with Edit/Delete,
  * Intuitive Syllabus Tracker, Question Counter Station (+1/-1),
  * Comprehensive Mock Test Analytics, Mistake Notebook, Simple Stats & LocalStorage Sync.
  */
 
 class JeeTrackerPro {
   constructor() {
-    this.STORAGE_KEY = 'JEE_TRACKER_PRO_V4_DATA';
+    this.STORAGE_KEY = 'JEE_TRACKER_PRO_V5_CLEAN';
     this.currentTab = 'home';
     this.activeSyllabusSubject = 'physics';
     
@@ -38,7 +39,9 @@ class JeeTrackerPro {
       streak: { count: 1, lastActiveDate: today },
       
       // Date-wise Custom Routine: { "YYYY-MM-DD": [ { id, time, title, subject, type } ] }
+      // Clean / Empty by default so user creates custom slots manually!
       dateRoutines: {},
+      
       // Date-wise Checked Slots: { "YYYY-MM-DD": [ slotId1, slotId2 ] }
       routineChecks: {},
       
@@ -240,7 +243,6 @@ class JeeTrackerPro {
     if (elM) elM.textContent = `${q.mathematics} Qs solved today`;
 
     // Render Checklist
-    const today = this.getTodayDateStr();
     const taskContainer = document.getElementById('homeTasksListContainer');
     if (taskContainer) {
       const list = this.state.tasks.slice(0, 4);
@@ -368,9 +370,9 @@ class JeeTrackerPro {
     }
   }
 
-  // 2. TIMETABLE & ROUTINE (MANUAL / CUSTOM DATE-WISE PLANNER)
+  // 2. TIMETABLE & ROUTINE (MANUAL CUSTOM DATE-WISE PLANNER)
   getSlotsForDate(dateStr) {
-    // Return custom slots if set, otherwise empty array (manual by default!)
+    // 100% custom/manual: return whatever slots user added for this date, or empty array!
     return this.state.dateRoutines[dateStr] || [];
   }
 
@@ -477,15 +479,15 @@ class JeeTrackerPro {
 
     if (slots.length === 0) {
       container.innerHTML = `
-        <div style="text-align:center; padding:2rem 1rem; background:var(--bg-card-elevated); border:1px dashed var(--border-color); border-radius:var(--radius-md); margin-top:0.5rem;">
+        <div style="text-align:center; padding:2.5rem 1rem; background:var(--bg-card-elevated); border:1px dashed var(--border-color); border-radius:var(--radius-md); margin-top:0.5rem;">
           <div style="font-size:2.2rem; margin-bottom:0.4rem;">📅</div>
-          <h4 style="font-size:1rem; font-weight:800; margin-bottom:0.25rem;">No Routine Slots for this Date</h4>
-          <p style="font-size:0.8rem; color:var(--text-sub); max-width:380px; margin:0 auto 1.25rem auto;">
-            Aap khud se custom manual slots add kar sakte hain, ya direct <strong>12-Hour Focused Dropper Template</strong> load kar sakte hain!
+          <h4 style="font-size:1.05rem; font-weight:800; margin-bottom:0.25rem;">No Routine Slots for this Date</h4>
+          <p style="font-size:0.82rem; color:var(--text-sub); max-width:400px; margin:0 auto 1.25rem auto;">
+            Aap khud se custom slots bana sakte hain, ya direct <strong>12-Hour Focused Dropper Routine</strong> template load kar sakte hain!
           </p>
-          <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
-            <button class="btn btn-primary btn-sm" onclick="app.openModal('modalSlot')">+ Add Custom Slot</button>
-            <button class="btn btn-accent btn-sm" onclick="app.load12HourTemplateForSelectedDate()">⚡ Load 12-Hour Dropper Template</button>
+          <div style="display:flex; justify-content:center; gap:0.65rem; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="app.openModal('modalSlot')">+ Add Custom Slot</button>
+            <button class="btn btn-accent" onclick="app.load12HourTemplateForSelectedDate()">⚡ Load 12-Hour Dropper Template</button>
           </div>
         </div>
       `;
@@ -511,23 +513,32 @@ class JeeTrackerPro {
       const durText = this.calcSlotDuration(slot.time);
       const subPill = slot.subject === 'Physics' ? 'pill-phy' : (slot.subject === 'Chemistry' ? 'pill-chem' : (slot.subject === 'Mathematics' ? 'pill-math' : 'pill-amber'));
       return `
-        <div class="routine-slot-row ${isLive ? 'active-slot' : ''} ${isDone ? 'completed-slot' : ''}" style="${isDone ? 'opacity:0.5; text-decoration:line-through;' : ''}">
-          <input type="checkbox" style="width:19px; height:19px; accent-color:var(--col-phy); cursor:pointer;" ${isDone ? 'checked' : ''} onchange="app.toggleRoutineSlotCheck('${slot.id}', this.checked)">
-          <div class="slot-time-badge">
-            <span>${slot.time}</span>
-            ${durText ? `<span class="slot-duration-tag">${durText}</span>` : ''}
-          </div>
-          <div style="flex:1;">
-            <div style="font-size:0.9rem; font-weight:800;">${slot.title}</div>
-            <div style="display:flex; gap:0.35rem; margin-top:0.25rem; flex-wrap:wrap;">
-              <span class="pill-badge ${subPill}">${slot.subject}</span>
-              <span class="pill-badge pill-amber">${slot.type}</span>
-              ${isLive ? '<span class="pill-badge pill-phy">⚡ Ongoing Slot</span>' : ''}
+        <div class="routine-slot-card ${isLive ? 'active-slot' : ''} ${isDone ? 'completed-slot' : ''}">
+          <!-- Top Row: Checkbox, Time, Duration and Actions -->
+          <div class="slot-card-top">
+            <div class="slot-time-group">
+              <input type="checkbox" class="slot-check" ${isDone ? 'checked' : ''} onchange="app.toggleRoutineSlotCheck('${slot.id}', this.checked)">
+              <span class="slot-time-text">${slot.time}</span>
+              ${durText ? `<span class="slot-dur-badge">${durText}</span>` : ''}
+            </div>
+            <div class="slot-actions">
+              <button class="btn-slot-icon btn-slot-edit" onclick="app.openEditSlotModal('${slot.id}')" title="Edit slot">✎</button>
+              <button class="btn-slot-icon btn-slot-del" onclick="app.deleteRoutineSlot('${slot.id}')" title="Delete slot">🗑️</button>
             </div>
           </div>
-          <div style="display:flex; gap:0.35rem;">
-            <button class="btn btn-subtle btn-sm" onclick="app.openEditSlotModal('${slot.id}')" title="Edit slot">✎</button>
-            <button class="btn btn-danger btn-sm" onclick="app.deleteRoutineSlot('${slot.id}')" title="Delete slot">🗑️</button>
+
+          <!-- Middle Row: Title -->
+          <div class="slot-card-body">
+            <div class="slot-title-text">${slot.title}</div>
+          </div>
+
+          <!-- Bottom Row: Badges & Tags (Always wraps cleanly inside card) -->
+          <div class="slot-card-bottom">
+            <div class="slot-tags-row">
+              <span class="pill-badge ${subPill}">${slot.subject}</span>
+              <span class="pill-badge pill-amber">${slot.type}</span>
+              ${isLive ? '<span class="pill-badge pill-live">⚡ Ongoing Now</span>' : ''}
+            </div>
           </div>
         </div>
       `;
@@ -546,6 +557,7 @@ class JeeTrackerPro {
     }
     this.saveState();
     this.renderRoutineView();
+    this.renderStatsView();
   }
 
   load12HourTemplateForSelectedDate() {
@@ -556,7 +568,7 @@ class JeeTrackerPro {
       this.saveState();
       this.renderRoutineView();
       this.renderHome();
-      alert(`⚡ 12-Hour Focused Dropper Routine loaded for ${this.selectedRoutineDate}! You can edit or delete any slots.`);
+      alert(`⚡ 12-Hour Dropper Template loaded for ${this.selectedRoutineDate}! You can edit or delete any slots.`);
     }
   }
 
@@ -756,6 +768,7 @@ class JeeTrackerPro {
     this.saveState();
     this.renderSyllabusChapters();
     this.renderHome();
+    this.renderStatsView();
   }
 
   // 4. MOCK TESTS & MISTAKE BOOK
